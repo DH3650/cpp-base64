@@ -1,56 +1,33 @@
-#include "base64.h"
+#include <gtest/gtest.h>
 #include <iostream>
+#include <string>
+#include "base64.h"
 
-int main() {
-  const std::string s = 
-    "René Nyffenegger\n"
-    "http://www.renenyffenegger.ch\n"
-    "passion for data\n";
+TEST(encode_decode_json, json_test) {
+  std::string json_msg("{\"name\":\"Tom\",\n");
+  json_msg += "\"age\":18\n";
+  json_msg += "\"message\":\"hello\"}";
 
-  std::string encoded = base64_encode(reinterpret_cast<const unsigned char*>(s.c_str()), s.length());
-  std::string decoded = base64_decode(encoded);
+  std::vector<unsigned char> json_buf(json_msg.begin(), json_msg.end());
+  auto encoded = base64_encode(json_buf.data(), json_buf.size());
+  // utf-8, LF-eol
+  std::string except_value(
+      "eyJuYW1lIjoiVG9tIiwKImFnZSI6MTgKIm1lc3NhZ2UiOiJoZWxsbyJ9");
+  ASSERT_EQ(encoded, except_value);
 
-  std::cout << "encoded: " << std::endl << encoded << std::endl << std::endl;
-  std::cout << "decoded: " << std::endl << decoded << std::endl;
+  auto decoded = base64_decode(encoded);
+  std::string decoded_str(decoded.begin(), decoded.end());
+  ASSERT_EQ(decoded_str, json_msg);
+}
 
+TEST(encode_decode_chinese_char, chinese_char_test) {
+  std::string cc_msg("测试消息：message content!");
+  std::vector<unsigned char> cc_buf(cc_msg.begin(), cc_msg.end());
+  auto encoded = base64_encode(cc_buf.data(), cc_buf.size());
+  std::string except_value("5rWL6K+V5raI5oGv77yabWVzc2FnZSBjb250ZW50IQ==");
+  ASSERT_EQ(encoded, except_value);
 
-  // Test all possibilites of fill bytes (none, one =, two ==)
-  // References calculated with: https://www.base64encode.org/
-
-  std::string rest0_original = "abc";
-  std::string rest0_reference = "YWJj";
-
-  std::string rest0_encoded = base64_encode(reinterpret_cast<const unsigned char*>(rest0_original.c_str()),
-    rest0_original.length());
-  std::string rest0_decoded = base64_decode(rest0_encoded);
-
-  std::cout << "encoded:   " << rest0_encoded << std::endl;
-  std::cout << "reference: " << rest0_reference << std::endl;
-  std::cout << "decoded:   " << rest0_decoded << std::endl << std::endl;
-
-
-  std::string rest1_original = "abcd";
-  std::string rest1_reference = "YWJjZA==";
-
-  std::string rest1_encoded = base64_encode(reinterpret_cast<const unsigned char*>(rest1_original.c_str()),
-    rest1_original.length());
-  std::string rest1_decoded = base64_decode(rest1_encoded);
-
-  std::cout << "encoded:   " << rest1_encoded << std::endl;
-  std::cout << "reference: " << rest1_reference << std::endl;
-  std::cout << "decoded:   " << rest1_decoded << std::endl << std::endl;
-
-
-  std::string rest2_original = "abcde";
-  std::string rest2_reference = "YWJjZGU=";
-
-  std::string rest2_encoded = base64_encode(reinterpret_cast<const unsigned char*>(rest2_original.c_str()),
-    rest2_original.length());
-  std::string rest2_decoded = base64_decode(rest2_encoded);
-
-  std::cout << "encoded:   " << rest2_encoded << std::endl;
-  std::cout << "reference: " << rest2_reference << std::endl;
-  std::cout << "decoded:   " << rest2_decoded << std::endl << std::endl;
-
-  return 0;
+  auto decoded = base64_decode(encoded);
+  std::string decoded_str(decoded.begin(), decoded.end());
+  ASSERT_EQ(decoded_str, cc_msg);
 }

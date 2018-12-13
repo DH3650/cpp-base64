@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.12)
+message (STATUS "CMake version: ${CMAKE_VERSION}")
+message (STATUS "CMAKE_CXX_COMPILER '${CMAKE_CXX_COMPILER}' ")
+
+project(cpp_base64)
+set(CMAKE_CXX_STANDARD 11)
+
+find_package(GTest REQUIRED)
+
+include_directories(${GTEST_INCLUDE_DIRS})
+add_library(cpp_base64 base64.h base64.cpp)
+
+enable_testing()
+add_executable(demo_app test.cpp)
+target_link_libraries(demo_app cpp_base64 GTest::Main GTest::GTest)
+add_test(base64_test demo_app)

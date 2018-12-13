@@ -1,14 +1,15 @@
 //
 //  base64 encoding and decoding with C++.
-//  Version: 1.01.00
+//  Version: 1.02.00
 //
 
-#ifndef BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A
-#define BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A
+#ifndef CPP_BASE64_H
+#define CPP_BASE64_H
 
 #include <string>
+#include <vector>
 
-std::string base64_encode(unsigned char const* , unsigned int len);
-std::string base64_decode(std::string const& s);
+std::string base64_encode(unsigned char const* buf, unsigned int len);
+std::vector<unsigned char> base64_decode(std::string const& s);
 
-#endif /* BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A */
+#endif /* CPP_BASE64_H */

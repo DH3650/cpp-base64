@@ -1,2 +1,5 @@
 *.swp
 test-base64
+
+.vscode/
+/**/*build*/
